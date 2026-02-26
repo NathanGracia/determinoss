@@ -1,0 +1,21 @@
+{
+  "name": "determinoss",
+  "version": "1.0.0",
+  "description": "Cryptographic seed generator from live lava lamp entropy",
+  "type": "module",
+  "scripts": {
+    "dev:server": "node --watch server/index.js",
+    "dev:client": "vite",
+    "build": "vite build",
+    "start": "node server/index.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.0.0",
+    "express": "^5.0.0",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "hls.js": "^1.5.0",
+    "vite": "^7.0.0"
+  }
+}
