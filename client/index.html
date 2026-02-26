@@ -14,7 +14,6 @@
       --accent: #7c3aed;
       --accent-glow: rgba(124, 58, 237, 0.3);
       --green: #22c55e;
-      --red: #ef4444;
       --text: #e2e8f0;
       --muted: #64748b;
       --mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
@@ -42,7 +41,6 @@
       font-size: 1.25rem;
       font-weight: 700;
       letter-spacing: -0.03em;
-      color: var(--text);
     }
 
     .logo span { color: var(--accent); }
@@ -86,7 +84,6 @@
       margin-bottom: 1rem;
     }
 
-    /* Stream config */
     .input-row {
       display: flex;
       gap: 0.5rem;
@@ -117,14 +114,13 @@
       font-size: 0.8rem;
       font-weight: 600;
       cursor: pointer;
-      transition: opacity 0.15s, box-shadow 0.15s;
+      transition: box-shadow 0.15s;
       white-space: nowrap;
     }
 
-    button:hover:not(:disabled) { box-shadow: 0 0 16px var(--accent-glow); }
-    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    button:hover { box-shadow: 0 0 16px var(--accent-glow); }
 
-    /* Status */
+    /* Status dot */
     .status-row {
       display: flex;
       align-items: center;
@@ -134,37 +130,16 @@
       color: var(--muted);
     }
 
-    .status-dot {
+    .dot {
       width: 8px;
       height: 8px;
       border-radius: 50%;
-      background: var(--red);
+      background: var(--muted);
       flex-shrink: 0;
       transition: background 0.3s;
     }
 
-    .status-dot.connected { background: var(--green); box-shadow: 0 0 6px var(--green); }
-    .status-dot.disconnected { background: var(--red); }
-
-    /* Video */
-    #video-container {
-      background: #000;
-      border-radius: 8px;
-      overflow: hidden;
-      min-height: 180px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--muted);
-      font-size: 0.78rem;
-    }
-
-    #video-container img,
-    #video-container video {
-      width: 100%;
-      height: auto;
-      display: block;
-    }
+    .dot.live { background: var(--green); box-shadow: 0 0 6px var(--green); }
 
     /* Seed display */
     .seed-card { grid-column: 1 / -1; }
@@ -180,8 +155,6 @@
       border: 1px solid var(--border);
       color: #a78bfa;
       min-height: 3.5rem;
-      transition: color 0.3s;
-      position: relative;
     }
 
     .seed-value::before {
@@ -200,7 +173,7 @@
       font-family: var(--mono);
     }
 
-    /* API info */
+    /* API table */
     .api-table {
       width: 100%;
       border-collapse: collapse;
@@ -216,6 +189,7 @@
     .api-table td:first-child { color: var(--accent); font-weight: 600; }
     .api-table tr:last-child td { border-bottom: none; }
 
+    /* Copy button */
     .copy-btn {
       background: transparent;
       border: 1px solid var(--border);
@@ -225,7 +199,22 @@
       border-radius: 4px;
     }
 
-    .copy-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--text); box-shadow: none; }
+    .copy-btn:hover { border-color: var(--accent); color: var(--text); box-shadow: none; }
+
+    /* Video */
+    #video-container {
+      background: #000;
+      border-radius: 8px;
+      overflow: hidden;
+      min-height: 180px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+
+    #video-container img { width: 100%; height: auto; display: block; }
   </style>
 </head>
 <body>
@@ -235,41 +224,7 @@
   </header>
 
   <main>
-    <!-- Stream config -->
-    <div class="card">
-      <div class="card-title">Stream source</div>
-      <button id="connect-btn">Start camera</button>
-      <div class="status-row">
-        <span id="status-dot" class="status-dot disconnected"></span>
-        <span id="status-text">Disconnected</span>
-        <span style="margin-left: auto" id="seed-count">0 seeds sent</span>
-      </div>
-    </div>
-
-    <!-- API reference -->
-    <div class="card">
-      <div class="card-title">API endpoints</div>
-      <table class="api-table">
-        <tr>
-          <td>GET /seed</td>
-          <td>Latest seed + age_ms</td>
-        </tr>
-        <tr>
-          <td>GET /seed/history</td>
-          <td>?n=10 last seeds</td>
-        </tr>
-        <tr>
-          <td>GET /seed/stream</td>
-          <td>SSE — live feed</td>
-        </tr>
-        <tr>
-          <td>GET /stream-proxy</td>
-          <td>?url=rtsp://… → MJPEG</td>
-        </tr>
-      </table>
-    </div>
-
-    <!-- Live seed -->
+    <!-- Latest seed -->
     <div class="card seed-card">
       <div class="card-title">Latest seed (SHA-256)</div>
       <div class="seed-value" id="seed-display">—</div>
@@ -277,10 +232,24 @@
         <span id="seed-timestamp">—</span>
         <button class="copy-btn" id="copy-btn">copy</button>
       </div>
+      <div class="status-row">
+        <span class="dot" id="sse-dot"></span>
+        <span id="sse-status">Connecting…</span>
+      </div>
     </div>
 
-    <!-- Live preview -->
-    <div class="card" style="grid-column: 1 / -1">
+    <!-- API reference -->
+    <div class="card">
+      <div class="card-title">API endpoints</div>
+      <table class="api-table">
+        <tr><td>GET /seed</td><td>Latest seed + age_ms</td></tr>
+        <tr><td>GET /seed/history</td><td>?n=10 last seeds</td></tr>
+        <tr><td>GET /seed/stream</td><td>SSE — live feed</td></tr>
+      </table>
+    </div>
+
+    <!-- Live view -->
+    <div class="card">
       <div class="card-title">Live view</div>
       <div id="live-auth">
         <div class="input-row">
@@ -294,6 +263,7 @@
 
   <script type="module" src="./main.js"></script>
   <script>
+    // Copy seed
     document.getElementById('copy-btn').addEventListener('click', () => {
       const seed = document.getElementById('seed-display').textContent;
       if (seed && seed !== '—') {
@@ -305,11 +275,11 @@
       }
     });
 
+    // Live view
     function loadLive(token) {
       const container = document.getElementById('video-container');
       const img = document.createElement('img');
       img.src = `/live?token=${encodeURIComponent(token)}`;
-      img.style.width = '100%';
       img.onerror = () => {
         container.style.display = 'none';
         document.getElementById('live-auth').style.display = '';
