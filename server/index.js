@@ -6,6 +6,7 @@ import { attachWsServer } from './wsHandler.js';
 import seedRouter from './routes/seed.js';
 import seedStreamRouter from './routes/seedStream.js';
 import streamProxyRouter from './routes/streamProxy.js';
+import liveRouter from './routes/live.js';
 
 const app = express();
 app.use(express.json());
@@ -13,6 +14,7 @@ app.use(express.json());
 app.use('/seed/stream', seedStreamRouter);
 app.use('/seed', seedRouter);
 app.use('/stream-proxy', streamProxyRouter);
+app.use('/live', liveRouter);
 
 // Serve built client in production
 if (process.env.NODE_ENV === 'production') {

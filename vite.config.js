@@ -5,6 +5,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/seed': 'http://localhost:3000',
+      '/live': 'http://localhost:3000',
       '/stream-proxy': 'http://localhost:3000',
       '^/ws$': {
         target: 'ws://localhost:3000',

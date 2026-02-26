@@ -281,8 +281,14 @@
 
     <!-- Live preview -->
     <div class="card" style="grid-column: 1 / -1">
-      <div class="card-title">Live preview</div>
-      <div id="video-container">No stream connected</div>
+      <div class="card-title">Live view</div>
+      <div id="live-auth">
+        <div class="input-row">
+          <input id="live-token" type="password" placeholder="Password" autocomplete="off" />
+          <button id="live-btn">Watch</button>
+        </div>
+      </div>
+      <div id="video-container" style="display:none"></div>
     </div>
   </main>
 
@@ -297,6 +303,31 @@
           setTimeout(() => { btn.textContent = 'copy'; }, 1500);
         });
       }
+    });
+
+    function loadLive(token) {
+      const container = document.getElementById('video-container');
+      const img = document.createElement('img');
+      img.src = `/live?token=${encodeURIComponent(token)}`;
+      img.style.width = '100%';
+      img.onerror = () => {
+        container.style.display = 'none';
+        document.getElementById('live-auth').style.display = '';
+        alert('Wrong password or no stream available.');
+      };
+      container.innerHTML = '';
+      container.appendChild(img);
+      container.style.display = '';
+      document.getElementById('live-auth').style.display = 'none';
+    }
+
+    document.getElementById('live-btn').addEventListener('click', () => {
+      const token = document.getElementById('live-token').value.trim();
+      if (token) loadLive(token);
+    });
+
+    document.getElementById('live-token').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') document.getElementById('live-btn').click();
     });
   </script>
 </body>

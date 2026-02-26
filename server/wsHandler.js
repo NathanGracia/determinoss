@@ -1,5 +1,6 @@
 import { WebSocketServer } from 'ws';
 import { seedPool } from './seedPool.js';
+import { frameStore } from './frameStore.js';
 
 const HEX_RE = /^[0-9a-f]{64}$/;
 
@@ -19,7 +20,16 @@ export function attachWsServer(server) {
         return;
       }
 
-      const { seed } = msg;
+      // Frame message
+      if (msg.type === 'frame') {
+        if (typeof msg.data === 'string') {
+          frameStore.push(Buffer.from(msg.data, 'base64'));
+        }
+        return;
+      }
+
+      // Seed message
+      const seed = msg.type === 'seed' ? msg.seed : msg.seed;
       if (typeof seed !== 'string' || !HEX_RE.test(seed)) {
         ws.send(JSON.stringify({ error: 'invalid seed format' }));
         return;

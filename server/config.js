@@ -5,4 +5,5 @@ export const config = {
   streamUrl: process.env.STREAM_URL ?? '',
   poolSize: parseInt(process.env.POOL_SIZE ?? '100', 10),
   seedIntervalMs: parseInt(process.env.SEED_INTERVAL_MS ?? '2000', 10),
+  viewerToken: process.env.VIEWER_TOKEN ?? 'changeme',
 };
