@@ -19,7 +19,7 @@ app.use('/live', liveRouter);
 // Serve built client in production
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static('dist'));
-  app.get('(.*)', (req, res) => res.sendFile('dist/index.html', { root: '.' }));
+  app.use((req, res) => res.sendFile('dist/index.html', { root: '.' }));
 }
 
 const server = http.createServer(app);
