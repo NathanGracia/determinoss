@@ -271,6 +271,12 @@
         Static frames (no movement) are discarded. Only genuine visual entropy makes it into the pool.
         The last <strong>100 seeds</strong> are kept in memory and served via REST API or real-time SSE stream.
       </p>
+      <p>
+        Pass <code>?token=…</code> to <code>GET /seed</code> to also receive the current lava lamp frame as a
+        base64-encoded JPEG (<code>frame_jpeg</code> field). Display it with
+        <code>img.src = "data:image/jpeg;base64," + frame_jpeg</code>.
+        The token is the same as the live view password.
+      </p>
       <div class="steps">
         <div class="step">
           <div class="step-num">STEP 1</div>
@@ -310,6 +316,7 @@
       <div class="card-title">API endpoints</div>
       <table class="api-table">
         <tr><td>GET /seed</td><td>Latest seed + age_ms</td></tr>
+        <tr><td>GET /seed?token=…</td><td>+ <code>frame_jpeg</code> (base64 JPEG)</td></tr>
         <tr><td>GET /seed/history</td><td>?n=10 last seeds</td></tr>
         <tr><td>GET /seed/stream</td><td>SSE — live feed</td></tr>
       </table>
