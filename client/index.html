@@ -201,6 +201,39 @@
 
     .copy-btn:hover { border-color: var(--accent); color: var(--text); box-shadow: none; }
 
+    /* Doc */
+    .doc-card { grid-column: 1 / -1; line-height: 1.7; font-size: 0.85rem; color: var(--muted); }
+    .doc-card p { margin-bottom: 0.75rem; }
+    .doc-card p:last-child { margin-bottom: 0; }
+    .doc-card strong { color: var(--text); }
+    .doc-card code {
+      font-family: var(--mono);
+      font-size: 0.8em;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.1em 0.4em;
+      color: #a78bfa;
+    }
+    .steps { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 0.75rem; }
+    .step {
+      flex: 1;
+      min-width: 180px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.9rem 1rem;
+    }
+    .step-num {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--accent);
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.4rem;
+    }
+    .step p { margin: 0; font-size: 0.8rem; }
+
     /* Video */
     #video-container {
       background: #000;
@@ -224,6 +257,39 @@
   </header>
 
   <main>
+    <!-- Doc -->
+    <div class="card doc-card">
+      <div class="card-title">What is determinoss?</div>
+      <p>
+        <strong>determinoss</strong> generates cryptographic seeds from the physical chaos of a lava lamp —
+        inspired by <strong>Cloudflare's LavaRand</strong> system. A webcam films the lamp 24/7.
+        Each frame is compared to the previous one: the pixel-by-pixel difference (delta) is hashed with
+        <code>SHA-256</code>, producing a 256-bit seed that is unpredictable and physically grounded.
+      </p>
+      <p>
+        Static frames (no movement) are discarded. Only genuine visual entropy makes it into the pool.
+        The last <strong>100 seeds</strong> are kept in memory and served via REST API or real-time SSE stream.
+      </p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">STEP 1</div>
+          <p>Webcam captures the lava lamp at ~1 fps via <code>ffmpeg</code></p>
+        </div>
+        <div class="step">
+          <div class="step-num">STEP 2</div>
+          <p>Per-pixel delta between consecutive frames is computed</p>
+        </div>
+        <div class="step">
+          <div class="step-num">STEP 3</div>
+          <p><code>SHA-256(delta)</code> produces a 64-char hex seed</p>
+        </div>
+        <div class="step">
+          <div class="step-num">STEP 4</div>
+          <p>Seed is pushed to this server and exposed via API</p>
+        </div>
+      </div>
+    </div>
+
     <!-- Latest seed -->
     <div class="card seed-card">
       <div class="card-title">Latest seed (SHA-256)</div>

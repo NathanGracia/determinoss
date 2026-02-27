@@ -17,7 +17,7 @@ import WebSocket from 'ws';
 import jpeg from 'jpeg-js';
 
 const WS_URL = process.env.WS_URL || 'ws://localhost:3000/ws';
-const WEBCAM_DEVICE = process.env.WEBCAM_DEVICE || '';
+const WEBCAM_DEVICE = (process.env.WEBCAM_DEVICE || '').trim().replace(/^"|"$/g, '');
 const WIDTH = 320;
 const HEIGHT = 240;
 const FPS = 1; // 1 frame/s — fine for a lava lamp
@@ -162,7 +162,7 @@ function startFfmpeg() {
   const ffmpeg = spawn('ffmpeg', args);
 
   ffmpeg.stdout.on('data', parseFrames);
-  ffmpeg.stderr.on('data', () => {}); // suppress logs
+  ffmpeg.stderr.on('data', (d) => process.stderr.write(d));
 
   ffmpeg.on('error', (err) => {
     console.error('[ffmpeg] failed to start:', err.message);
