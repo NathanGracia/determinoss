@@ -4,340 +4,593 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>determinoss</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Jost:ital,wght@0,300;0,400;0,500;1,300&family=Rajdhani:wght@500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #0a0a0f;
-      --surface: #111118;
-      --border: #1e1e2e;
-      --accent: #7c3aed;
-      --accent-glow: rgba(124, 58, 237, 0.3);
-      --green: #22c55e;
-      --text: #e2e8f0;
-      --muted: #64748b;
-      --mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+      --bg: #030c12;
+      --surface: rgba(0, 200, 240, 0.035);
+      --border: rgba(0, 200, 240, 0.1);
+      --border-glow: rgba(0, 200, 240, 0.32);
+      --cyan: #00d8ff;
+      --teal: #3dffc0;
+      --violet: #9b6dff;
+      --text: #b8dde8;
+      --bright: #e8f8ff;
+      --muted: #3a6070;
+      --mono: 'Space Mono', monospace;
+      --display: 'Cinzel', serif;
+      --ui: 'Rajdhani', sans-serif;
+      --body: 'Jost', sans-serif;
     }
+
+    html { scroll-behavior: smooth; }
 
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-family: var(--body);
+      font-weight: 300;
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
+      overflow-x: hidden;
     }
 
+    /* Animated background canvas */
+    #bg-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* Atmospheric gradient overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 70% 50% at 15% 15%, rgba(0, 180, 255, 0.07) 0%, transparent 65%),
+        radial-gradient(ellipse 55% 45% at 85% 85%, rgba(61, 255, 192, 0.05) 0%, transparent 65%),
+        radial-gradient(ellipse 50% 70% at 50% 50%, rgba(0, 0, 0, 0.6) 0%, transparent 80%);
+    }
+
+    .content {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
     header {
+      padding: 1.25rem 2.5rem;
       border-bottom: 1px solid var(--border);
-      padding: 1rem 2rem;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      background: rgba(3, 12, 18, 0.75);
       display: flex;
       align-items: center;
-      gap: 1rem;
+      gap: 1.5rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
 
     .logo {
-      font-family: var(--mono);
-      font-size: 1.25rem;
-      font-weight: 700;
-      letter-spacing: -0.03em;
+      font-family: var(--display);
+      font-size: 1.35rem;
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      color: var(--bright);
+      text-shadow: 0 0 24px rgba(0, 216, 255, 0.55), 0 0 50px rgba(0, 216, 255, 0.2);
     }
 
-    .logo span { color: var(--accent); }
+    .logo em {
+      font-style: normal;
+      color: var(--cyan);
+    }
 
     .tagline {
-      font-size: 0.75rem;
+      font-size: 0.68rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
       color: var(--muted);
       border-left: 1px solid var(--border);
-      padding-left: 1rem;
+      padding-left: 1.5rem;
       margin-left: auto;
     }
 
+    /* ── Main grid ── */
     main {
       flex: 1;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1.5rem;
-      padding: 1.5rem 2rem;
       max-width: 1100px;
       width: 100%;
       margin: 0 auto;
+      padding: 2rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      align-items: start;
     }
 
     @media (max-width: 720px) {
       main { grid-template-columns: 1fr; padding: 1rem; }
+      header { padding: 1rem 1.25rem; }
+      .tagline { display: none; }
     }
 
+    /* ── Card ── */
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1.5rem;
+      border-radius: 16px;
+      padding: 1.75rem;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.35s, box-shadow 0.35s;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(0, 216, 255, 0.025) 0%, transparent 55%, rgba(61, 255, 192, 0.015) 100%);
+      pointer-events: none;
+    }
+
+    .card:hover {
+      border-color: var(--border-glow);
+      box-shadow: 0 0 40px rgba(0, 200, 240, 0.07), inset 0 0 40px rgba(0, 200, 240, 0.025);
     }
 
     .card-title {
-      font-size: 0.7rem;
+      font-family: var(--ui);
+      font-size: 0.72rem;
       font-weight: 600;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.18em;
       text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 1rem;
+      color: var(--cyan);
+      margin-bottom: 1.25rem;
+      opacity: 0.65;
     }
 
-    .input-row {
-      display: flex;
-      gap: 0.5rem;
-    }
+    .full-width { grid-column: 1 / -1; }
 
-    .input-row input {
-      flex: 1;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 0.6rem 0.9rem;
-      color: var(--text);
+    /* ── Seed display ── */
+    .seed-glyph {
       font-family: var(--mono);
-      font-size: 0.8rem;
-      outline: none;
-      transition: border-color 0.15s;
-    }
-
-    .input-row input:focus { border-color: var(--accent); }
-    .input-row input::placeholder { color: var(--muted); }
-
-    button {
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      padding: 0.6rem 1.2rem;
-      font-size: 0.8rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: box-shadow 0.15s;
-      white-space: nowrap;
-    }
-
-    button:hover { box-shadow: 0 0 16px var(--accent-glow); }
-
-    /* Status dot */
-    .status-row {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      margin-top: 0.75rem;
-      font-size: 0.78rem;
-      color: var(--muted);
-    }
-
-    .dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--muted);
-      flex-shrink: 0;
-      transition: background 0.3s;
-    }
-
-    .dot.live { background: var(--green); box-shadow: 0 0 6px var(--green); }
-
-    /* Seed display */
-    .seed-card { grid-column: 1 / -1; }
-
-    .seed-value {
-      font-family: var(--mono);
-      font-size: clamp(0.65rem, 1.8vw, 0.9rem);
+      font-size: clamp(0.55rem, 1.5vw, 0.8rem);
       word-break: break-all;
-      letter-spacing: 0.04em;
-      padding: 1rem;
-      background: var(--bg);
-      border-radius: 8px;
+      letter-spacing: 0.07em;
+      line-height: 1.9;
+      padding: 1.25rem 1.5rem;
+      background: rgba(0, 0, 0, 0.45);
+      border-radius: 10px;
       border: 1px solid var(--border);
-      color: #a78bfa;
-      min-height: 3.5rem;
+      color: var(--teal);
+      min-height: 4.5rem;
+      position: relative;
+      text-shadow: 0 0 12px rgba(61, 255, 192, 0.45);
+      overflow: hidden;
     }
 
-    .seed-value::before {
+    .seed-glyph::before {
       content: '0x';
       color: var(--muted);
+      font-size: 0.65em;
       user-select: none;
-      font-size: 0.7em;
+    }
+
+    /* Scan line */
+    .seed-glyph::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, var(--cyan) 40%, var(--teal) 60%, transparent 100%);
+      animation: scan 4s linear infinite;
+      opacity: 0;
+    }
+
+    @keyframes scan {
+      0%   { top: 0%; opacity: 0; }
+      5%   { opacity: 0.5; }
+      95%  { opacity: 0.5; }
+      100% { top: 100%; opacity: 0; }
     }
 
     .seed-meta {
       display: flex;
       justify-content: space-between;
-      margin-top: 0.75rem;
-      font-size: 0.72rem;
+      align-items: center;
+      margin-top: 0.9rem;
+      font-size: 0.68rem;
       color: var(--muted);
       font-family: var(--mono);
     }
 
-    /* API table */
-    .api-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.78rem;
+    /* ── Status dot ── */
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--muted);
+      flex-shrink: 0;
+      transition: all 0.5s;
     }
 
-    .api-table td {
-      padding: 0.4rem 0.6rem;
-      border-bottom: 1px solid var(--border);
-      font-family: var(--mono);
+    .dot.live {
+      background: var(--teal);
+      box-shadow: 0 0 8px var(--teal), 0 0 20px rgba(61, 255, 192, 0.45);
+      animation: pulse-dot 2.5s ease-in-out infinite;
     }
 
-    .api-table td:first-child { color: var(--accent); font-weight: 600; }
-    .api-table tr:last-child td { border-bottom: none; }
+    @keyframes pulse-dot {
+      0%, 100% { box-shadow: 0 0 6px var(--teal), 0 0 14px rgba(61, 255, 192, 0.3); }
+      50%       { box-shadow: 0 0 14px var(--teal), 0 0 32px rgba(61, 255, 192, 0.65); }
+    }
 
-    /* Copy button */
+    .status-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.8rem;
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+
+    /* ── Buttons ── */
+    button {
+      font-family: var(--ui);
+      font-size: 0.75rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      font-weight: 700;
+      border: 1px solid var(--border-glow);
+      background: rgba(0, 216, 255, 0.07);
+      color: var(--cyan);
+      border-radius: 8px;
+      padding: 0.6rem 1.4rem;
+      cursor: pointer;
+      transition: background 0.2s, box-shadow 0.2s;
+      white-space: nowrap;
+    }
+
+    button:hover {
+      background: rgba(0, 216, 255, 0.14);
+      box-shadow: 0 0 22px rgba(0, 216, 255, 0.22), inset 0 0 10px rgba(0, 216, 255, 0.06);
+    }
+
     .copy-btn {
       background: transparent;
       border: 1px solid var(--border);
       color: var(--muted);
-      padding: 0.25rem 0.6rem;
-      font-size: 0.68rem;
-      border-radius: 4px;
+      padding: 0.28rem 0.75rem;
+      font-size: 0.58rem;
     }
 
-    .copy-btn:hover { border-color: var(--accent); color: var(--text); box-shadow: none; }
-
-    /* Doc */
-    .doc-card { grid-column: 1 / -1; line-height: 1.7; font-size: 0.85rem; color: var(--muted); }
-    .doc-card p { margin-bottom: 0.75rem; }
-    .doc-card p:last-child { margin-bottom: 0; }
-    .doc-card strong { color: var(--text); }
-    .doc-card code {
-      font-family: var(--mono);
-      font-size: 0.8em;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 0.1em 0.4em;
-      color: #a78bfa;
+    .copy-btn:hover {
+      border-color: var(--border-glow);
+      color: var(--cyan);
+      box-shadow: 0 0 10px rgba(0, 216, 255, 0.14);
     }
-    .steps { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 0.75rem; }
-    .step {
+
+    /* ── Input ── */
+    .input-row { display: flex; gap: 0.5rem; }
+
+    .input-row input {
       flex: 1;
-      min-width: 180px;
-      background: var(--bg);
+      background: rgba(0, 0, 0, 0.4);
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 0.9rem 1rem;
+      padding: 0.6rem 1rem;
+      color: var(--text);
+      font-family: var(--body);
+      font-size: 0.85rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
-    .step-num {
-      font-family: var(--mono);
-      font-size: 0.65rem;
-      color: var(--accent);
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      margin-bottom: 0.4rem;
-    }
-    .step p { margin: 0; font-size: 0.8rem; }
 
-    /* Video */
+    .input-row input:focus {
+      border-color: var(--border-glow);
+      box-shadow: 0 0 16px rgba(0, 216, 255, 0.1);
+    }
+
+    .input-row input::placeholder { color: var(--muted); }
+
+    /* ── API table ── */
+    .api-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .api-table td {
+      padding: 0.55rem 0.6rem;
+      border-bottom: 1px solid var(--border);
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      vertical-align: middle;
+    }
+
+    .api-table tr:last-child td { border-bottom: none; }
+    .api-table td:first-child { color: var(--teal); font-weight: 700; }
+    .api-table td:last-child { color: var(--muted); font-family: var(--body); font-size: 0.76rem; font-weight: 300; }
+
+    .api-table td code {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 0.1em 0.35em;
+      color: var(--cyan);
+      font-size: 0.85em;
+      font-family: var(--mono);
+    }
+
+    /* ── Video ── */
     #video-container {
       background: #000;
-      border-radius: 8px;
+      border-radius: 10px;
       overflow: hidden;
-      min-height: 180px;
+      min-height: 160px;
       display: flex;
       align-items: center;
       justify-content: center;
       color: var(--muted);
       font-size: 0.78rem;
+      border: 1px solid var(--border);
     }
 
     #video-container img { width: 100%; height: auto; display: block; }
+
+    /* ── Doc card ── */
+    .doc-card {
+      line-height: 1.8;
+      font-size: 0.84rem;
+      color: var(--muted);
+    }
+
+    .doc-card p { margin-bottom: 0.9rem; }
+    .doc-card p:last-of-type { margin-bottom: 0; }
+    .doc-card strong { color: var(--bright); font-weight: 500; }
+
+    .doc-card code {
+      font-family: var(--mono);
+      font-size: 0.78em;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 0.1em 0.4em;
+      color: var(--cyan);
+    }
+
+    .steps { display: flex; gap: 0.9rem; flex-wrap: wrap; margin-top: 1.1rem; }
+
+    .step {
+      flex: 1;
+      min-width: 155px;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem;
+    }
+
+    .step-num {
+      font-family: var(--ui);
+      font-size: 0.65rem;
+      color: var(--cyan);
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      margin-bottom: 0.5rem;
+      opacity: 0.65;
+    }
+
+    .step p { margin: 0; font-size: 0.77rem; }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 1.25rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+
+    footer a {
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.08em;
+      transition: color 0.2s;
+    }
+
+    footer a:hover { color: var(--cyan); }
+
+    /* ── Meme ── */
+    .meme-end {
+      text-align: center;
+      padding: 2rem 2rem 3rem;
+    }
+
+    .meme-end img {
+      max-width: 220px;
+      border-radius: 8px;
+      display: inline-block;
+    }
   </style>
 </head>
 <body>
-  <header>
-    <div class="logo">determin<span>oss</span></div>
-    <div class="tagline">lava lamp entropy → cryptographic seeds</div>
-  </header>
+  <canvas id="bg-canvas"></canvas>
 
-  <main>
-    <!-- Doc -->
-    <div class="card doc-card">
-      <div class="card-title">What is determinoss?</div>
-      <img src="./meme.png" style="max-width:100%;border-radius:8px;margin-bottom:1rem;display:block;" />
-      <p>
-        <strong>determinoss</strong> generates cryptographic seeds from the physical chaos of a lava lamp —
-        inspired by <strong>Cloudflare's LavaRand</strong> system. A webcam films the lamp 24/7.
-        Each frame is compared to the previous one: the pixel-by-pixel difference (delta) is hashed with
-        <code>SHA-256</code>, producing a 256-bit seed that is unpredictable and physically grounded.
-      </p>
-      <p>
-        Static frames (no movement) are discarded. Only genuine visual entropy makes it into the pool.
-        The last <strong>100 seeds</strong> are kept in memory and served via REST API or real-time SSE stream.
-      </p>
-      <p>
-        Pass <code>?token=…</code> to <code>GET /seed</code> to also receive the current lava lamp frame as a
-        base64-encoded JPEG (<code>frame_jpeg</code> field). Display it with
-        <code>img.src = "data:image/jpeg;base64," + frame_jpeg</code>.
-        The token is the same as the live view password.
-      </p>
-      <div class="steps">
-        <div class="step">
-          <div class="step-num">STEP 1</div>
-          <p>Webcam captures the lava lamp at ~1 fps via <code>ffmpeg</code></p>
+  <div class="content">
+    <header>
+      <div class="logo">determin<em>oss</em></div>
+      <div class="tagline">lava lamp entropy &rarr; cryptographic seeds</div>
+    </header>
+
+    <main>
+      <!-- Latest seed -->
+      <div class="card full-width">
+        <div class="card-title">Latest Seed — SHA-256</div>
+        <div class="seed-glyph" id="seed-display">—</div>
+        <div class="seed-meta">
+          <span id="seed-timestamp">—</span>
+          <button class="copy-btn" id="copy-btn">copy</button>
         </div>
-        <div class="step">
-          <div class="step-num">STEP 2</div>
-          <p>Per-pixel delta between consecutive frames is computed</p>
-        </div>
-        <div class="step">
-          <div class="step-num">STEP 3</div>
-          <p><code>SHA-256(delta)</code> produces a 64-char hex seed</p>
-        </div>
-        <div class="step">
-          <div class="step-num">STEP 4</div>
-          <p>Seed is pushed to this server and exposed via API</p>
+        <div class="status-row">
+          <span class="dot" id="sse-dot"></span>
+          <span id="sse-status">Connecting…</span>
         </div>
       </div>
-    </div>
 
-    <!-- Latest seed -->
-    <div class="card seed-card">
-      <div class="card-title">Latest seed (SHA-256)</div>
-      <div class="seed-value" id="seed-display">—</div>
-      <div class="seed-meta">
-        <span id="seed-timestamp">—</span>
-        <button class="copy-btn" id="copy-btn">copy</button>
+      <!-- API reference -->
+      <div class="card">
+        <div class="card-title">API Endpoints</div>
+        <table class="api-table">
+          <tr><td>GET /seed</td><td>Latest seed + age_ms</td></tr>
+          <tr><td>GET /seed?token=…</td><td>+ <code>frame_jpeg</code> (base64 JPEG)</td></tr>
+          <tr><td>GET /seed/history</td><td>?n=10 last seeds</td></tr>
+          <tr><td>GET /seed/stream</td><td>SSE — live feed</td></tr>
+        </table>
       </div>
-      <div class="status-row">
-        <span class="dot" id="sse-dot"></span>
-        <span id="sse-status">Connecting…</span>
+
+      <!-- Live view -->
+      <div class="card">
+        <div class="card-title">Live View</div>
+        <div id="live-auth">
+          <div class="input-row">
+            <input id="live-token" type="password" placeholder="Password" autocomplete="off" />
+            <button id="live-btn">Watch</button>
+          </div>
+        </div>
+        <div id="video-container" style="display:none"></div>
       </div>
-    </div>
 
-    <!-- API reference -->
-    <div class="card">
-      <div class="card-title">API endpoints</div>
-      <table class="api-table">
-        <tr><td>GET /seed</td><td>Latest seed + age_ms</td></tr>
-        <tr><td>GET /seed?token=…</td><td>+ <code>frame_jpeg</code> (base64 JPEG)</td></tr>
-        <tr><td>GET /seed/history</td><td>?n=10 last seeds</td></tr>
-        <tr><td>GET /seed/stream</td><td>SSE — live feed</td></tr>
-      </table>
-    </div>
-
-    <!-- Live view -->
-    <div class="card">
-      <div class="card-title">Live view</div>
-      <div id="live-auth">
-        <div class="input-row">
-          <input id="live-token" type="password" placeholder="Password" autocomplete="off" />
-          <button id="live-btn">Watch</button>
+      <!-- Doc -->
+      <div class="card doc-card full-width">
+        <div class="card-title">How It Works</div>
+        <p>
+          <strong>determinoss</strong> generates cryptographic seeds from the physical chaos of a lava lamp —
+          inspired by <strong>Cloudflare's LavaRand</strong> system. A webcam films the lamp 24/7.
+          Each frame is compared to the previous one: the pixel-by-pixel difference (delta) is hashed with
+          <code>SHA-256</code>, producing a 256-bit seed that is unpredictable and physically grounded.
+        </p>
+        <p>
+          Static frames (no movement) are discarded. Only genuine visual entropy makes it into the pool.
+          The last <strong>100 seeds</strong> are kept in memory and served via REST API or real-time SSE stream.
+        </p>
+        <p>
+          Pass <code>?token=…</code> to <code>GET /seed</code> to also receive the current lava lamp frame as a
+          base64-encoded JPEG (<code>frame_jpeg</code> field). Display it with
+          <code>img.src = "data:image/jpeg;base64," + frame_jpeg</code>.
+          The token is the same as the live view password.
+        </p>
+        <div class="steps">
+          <div class="step">
+            <div class="step-num">STEP 01</div>
+            <p>Webcam captures the lava lamp at ~1 fps via <code>ffmpeg</code></p>
+          </div>
+          <div class="step">
+            <div class="step-num">STEP 02</div>
+            <p>Per-pixel delta between consecutive frames is computed</p>
+          </div>
+          <div class="step">
+            <div class="step-num">STEP 03</div>
+            <p><code>SHA-256(delta)</code> produces a 64-char hex seed</p>
+          </div>
+          <div class="step">
+            <div class="step-num">STEP 04</div>
+            <p>Seed is pushed to the server and exposed via API</p>
+          </div>
         </div>
       </div>
-      <div id="video-container" style="display:none"></div>
+    </main>
+
+    <!-- Meme -->
+    <div class="meme-end">
+      <img src="./meme.png" alt="" />
     </div>
-  </main>
+
+    <footer>
+      <a href="https://nathangracia.com" target="_blank" rel="noopener">nathangracia.com</a>
+    </footer>
+  </div>
 
   <script type="module" src="./main.js"></script>
   <script>
-    // Copy seed
+    /* ── Bioluminescent particle background ── */
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    const COLORS = ['#00d8ff', '#3dffc0', '#9b6dff', '#00bcd4', '#00e5b0'];
+    const particles = Array.from({ length: 65 }, () => ({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      r: Math.random() * 1.8 + 0.4,
+      vx: (Math.random() - 0.5) * 0.25,
+      vy: (Math.random() - 0.5) * 0.25,
+      color: COLORS[Math.floor(Math.random() * COLORS.length)],
+      alpha: Math.random() * 0.35 + 0.08,
+      phase: Math.random() * Math.PI * 2,
+      freq: Math.random() * 0.012 + 0.006,
+    }));
+
+    let t = 0;
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      t += 0.016;
+
+      for (const p of particles) {
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.x < -20) p.x = canvas.width + 20;
+        else if (p.x > canvas.width + 20) p.x = -20;
+        if (p.y < -20) p.y = canvas.height + 20;
+        else if (p.y > canvas.height + 20) p.y = -20;
+
+        const a = p.alpha * (0.55 + 0.45 * Math.sin(t * p.freq * 60 + p.phase));
+        const glowR = p.r * 9;
+
+        const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, glowR);
+        const hex = Math.floor(a * 160).toString(16).padStart(2, '0');
+        g.addColorStop(0, p.color + hex);
+        g.addColorStop(0.4, p.color + Math.floor(a * 60).toString(16).padStart(2, '0'));
+        g.addColorStop(1, 'transparent');
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, glowR, 0, Math.PI * 2);
+        ctx.fillStyle = g;
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.globalAlpha = Math.min(a * 3, 0.9);
+        ctx.fillStyle = p.color;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+
+      requestAnimationFrame(draw);
+    }
+    draw();
+
+    /* ── Copy seed ── */
     document.getElementById('copy-btn').addEventListener('click', () => {
       const seed = document.getElementById('seed-display').textContent;
       if (seed && seed !== '—') {
@@ -349,7 +602,7 @@
       }
     });
 
-    // Live view
+    /* ── Live view ── */
     function loadLive(token) {
       const container = document.getElementById('video-container');
       const img = document.createElement('img');
