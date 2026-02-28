@@ -626,6 +626,7 @@
     /* ── Live view ── */
     function loadLive(token) {
       const container = document.getElementById('video-container');
+      const btn = document.getElementById('fullscreen-btn');
       const img = document.createElement('img');
       img.src = `/live?token=${encodeURIComponent(token)}`;
       img.onerror = () => {
@@ -635,8 +636,8 @@
       };
       container.innerHTML = '';
       container.appendChild(img);
-      container.appendChild(document.getElementById('fullscreen-btn'));
-      document.getElementById('fullscreen-btn').style.display = '';
+      container.appendChild(btn);
+      btn.style.display = '';
       container.style.display = '';
       document.getElementById('live-auth').style.display = 'none';
     }
