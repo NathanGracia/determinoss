@@ -356,21 +356,28 @@
 
     #fullscreen-btn {
       position: absolute;
-      bottom: 0.6rem;
-      right: 0.6rem;
-      background: rgba(0, 0, 0, 0.55);
-      border: 1px solid var(--border);
-      color: var(--muted);
-      padding: 0.3rem 0.55rem;
-      font-size: 0.65rem;
-      border-radius: 6px;
+      bottom: 0.75rem;
+      right: 0.75rem;
+      background: rgba(0, 0, 0, 0.7);
+      border: 1px solid var(--border-glow);
+      color: var(--cyan);
+      padding: 0.45rem 0.7rem;
+      font-size: 1rem;
+      line-height: 1;
+      border-radius: 8px;
       cursor: pointer;
-      backdrop-filter: blur(6px);
-      transition: color 0.2s, border-color 0.2s;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 0 12px rgba(0, 216, 255, 0.2), inset 0 0 8px rgba(0, 216, 255, 0.06);
+      transition: box-shadow 0.2s, background 0.2s;
       display: none;
+      z-index: 10;
     }
 
-    #fullscreen-btn:hover { color: var(--cyan); border-color: var(--border-glow); }
+    #fullscreen-btn:hover {
+      background: rgba(0, 216, 255, 0.15);
+      box-shadow: 0 0 22px rgba(0, 216, 255, 0.4), inset 0 0 10px rgba(0, 216, 255, 0.1);
+    }
 
     /* ── Doc card ── */
     .doc-card {
@@ -651,11 +658,24 @@
       if (e.key === 'Enter') document.getElementById('live-btn').click();
     });
 
-    document.getElementById('fullscreen-btn').addEventListener('click', () => {
-      const container = document.getElementById('video-container');
-      if (container.requestFullscreen) container.requestFullscreen();
-      else if (container.webkitRequestFullscreen) container.webkitRequestFullscreen();
+    const fsBtn = document.getElementById('fullscreen-btn');
+
+    function updateFsIcon() {
+      fsBtn.textContent = document.fullscreenElement ? '✕' : '⛶';
+      fsBtn.title = document.fullscreenElement ? 'Exit fullscreen' : 'Fullscreen';
+    }
+
+    fsBtn.addEventListener('click', () => {
+      if (document.fullscreenElement) {
+        document.exitFullscreen();
+      } else {
+        const container = document.getElementById('video-container');
+        if (container.requestFullscreen) container.requestFullscreen();
+        else if (container.webkitRequestFullscreen) container.webkitRequestFullscreen();
+      }
     });
+
+    document.addEventListener('fullscreenchange', updateFsIcon);
   </script>
 </body>
 </html>
