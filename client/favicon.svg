@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect width="32" height="32" rx="6" fill="#030c12"/>
+  <!-- Hexagon outline -->
+  <polygon
+    points="16,4 26,10 26,22 16,28 6,22 6,10"
+    fill="none"
+    stroke="#00d8ff"
+    stroke-width="1.5"
+    opacity="0.8"
+  />
+  <!-- Inner glow dot -->
+  <circle cx="16" cy="16" r="3.5" fill="#3dffc0" opacity="0.95"/>
+  <circle cx="16" cy="16" r="5.5" fill="#3dffc0" opacity="0.12"/>
+  <circle cx="16" cy="16" r="8" fill="#00d8ff" opacity="0.05"/>
+</svg>
