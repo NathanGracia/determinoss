@@ -20,7 +20,7 @@ const WS_URL = process.env.WS_URL || 'ws://localhost:3000/ws';
 const WEBCAM_DEVICE = (process.env.WEBCAM_DEVICE || '').trim().replace(/^"|"$/g, '');
 const WIDTH = 1920;
 const HEIGHT = 1080;
-const FPS = 8;
+const FPS = 1;
 const SEED_INTERVAL_MS = 2000; // send a seed at most every 2s regardless of FPS
 
 if (!WEBCAM_DEVICE) {

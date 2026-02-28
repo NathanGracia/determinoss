@@ -354,6 +354,24 @@
 
     #video-container img { width: 100%; height: auto; display: block; }
 
+    #fullscreen-btn {
+      position: absolute;
+      bottom: 0.6rem;
+      right: 0.6rem;
+      background: rgba(0, 0, 0, 0.55);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 0.3rem 0.55rem;
+      font-size: 0.65rem;
+      border-radius: 6px;
+      cursor: pointer;
+      backdrop-filter: blur(6px);
+      transition: color 0.2s, border-color 0.2s;
+      display: none;
+    }
+
+    #fullscreen-btn:hover { color: var(--cyan); border-color: var(--border-glow); }
+
     /* ── Doc card ── */
     .doc-card {
       line-height: 1.8;
@@ -473,7 +491,9 @@
             <button id="live-btn">Watch</button>
           </div>
         </div>
-        <div id="video-container" style="display:none"></div>
+        <div id="video-container" style="display:none; position:relative;">
+          <button id="fullscreen-btn" title="Fullscreen">⛶</button>
+        </div>
       </div>
 
       <!-- Doc -->
@@ -615,6 +635,8 @@
       };
       container.innerHTML = '';
       container.appendChild(img);
+      container.appendChild(document.getElementById('fullscreen-btn'));
+      document.getElementById('fullscreen-btn').style.display = '';
       container.style.display = '';
       document.getElementById('live-auth').style.display = 'none';
     }
@@ -626,6 +648,12 @@
 
     document.getElementById('live-token').addEventListener('keydown', (e) => {
       if (e.key === 'Enter') document.getElementById('live-btn').click();
+    });
+
+    document.getElementById('fullscreen-btn').addEventListener('click', () => {
+      const container = document.getElementById('video-container');
+      if (container.requestFullscreen) container.requestFullscreen();
+      else if (container.webkitRequestFullscreen) container.webkitRequestFullscreen();
     });
   </script>
 </body>
