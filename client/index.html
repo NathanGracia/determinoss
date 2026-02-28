@@ -21,7 +21,7 @@
       --violet: #9b6dff;
       --text: #b8dde8;
       --bright: #e8f8ff;
-      --muted: #3a6070;
+      --muted: #6a9aaa;
       --mono: 'Space Mono', monospace;
       --display: 'Cinzel', serif;
       --ui: 'Rajdhani', sans-serif;
@@ -105,6 +105,27 @@
       border-left: 1px solid var(--border);
       padding-left: 1.5rem;
       margin-left: auto;
+    }
+
+    #lang-btn {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      border-radius: 6px;
+      padding: 0.3rem 0.65rem;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s;
+      flex-shrink: 0;
+    }
+
+    #lang-btn:hover {
+      color: var(--cyan);
+      border-color: var(--border-glow);
+      box-shadow: none;
     }
 
     /* ── Main grid ── */
@@ -460,13 +481,14 @@
   <div class="content">
     <header>
       <div class="logo">determin<em>oss</em></div>
-      <div class="tagline">lava lamp entropy &rarr; cryptographic seeds</div>
+      <div class="tagline" data-en="lava lamp entropy → cryptographic seeds" data-fr="entropie lampe à lave → graines cryptographiques">lava lamp entropy → cryptographic seeds</div>
+      <button id="lang-btn">FR</button>
     </header>
 
     <main>
       <!-- Latest seed -->
       <div class="card full-width">
-        <div class="card-title">Latest Seed — SHA-256</div>
+        <div class="card-title" data-en="Latest Seed — SHA-256" data-fr="Dernière Graine — SHA-256">Latest Seed — SHA-256</div>
         <div class="seed-glyph" id="seed-display">—</div>
         <div class="seed-meta">
           <span id="seed-timestamp">—</span>
@@ -480,22 +502,22 @@
 
       <!-- API reference -->
       <div class="card">
-        <div class="card-title">API Endpoints</div>
+        <div class="card-title" data-en="API Endpoints" data-fr="Points d'API">API Endpoints</div>
         <table class="api-table">
-          <tr><td>GET /seed</td><td>Latest seed + age_ms</td></tr>
+          <tr><td>GET /seed</td><td data-en="Latest seed + age_ms" data-fr="Dernière graine + age_ms">Latest seed + age_ms</td></tr>
           <tr><td>GET /seed?token=…</td><td>+ <code>frame_jpeg</code> (base64 JPEG)</td></tr>
-          <tr><td>GET /seed/history</td><td>?n=10 last seeds</td></tr>
-          <tr><td>GET /seed/stream</td><td>SSE — live feed</td></tr>
+          <tr><td>GET /seed/history</td><td data-en="?n=10 last seeds" data-fr="?n=10 dernières graines">?n=10 last seeds</td></tr>
+          <tr><td>GET /seed/stream</td><td data-en="SSE — live feed" data-fr="SSE — flux en direct">SSE — live feed</td></tr>
         </table>
       </div>
 
       <!-- Live view -->
       <div class="card">
-        <div class="card-title">Live View</div>
+        <div class="card-title" data-en="Live View" data-fr="Vue en Direct">Live View</div>
         <div id="live-auth">
           <div class="input-row">
-            <input id="live-token" type="password" placeholder="Password" autocomplete="off" />
-            <button id="live-btn">Watch</button>
+            <input id="live-token" type="password" data-placeholder-en="Password" data-placeholder-fr="Mot de passe" placeholder="Password" autocomplete="off" />
+            <button id="live-btn" data-en="Watch" data-fr="Regarder">Watch</button>
           </div>
         </div>
         <div id="video-container" style="display:none; position:relative;">
@@ -505,18 +527,21 @@
 
       <!-- Doc -->
       <div class="card doc-card full-width">
-        <div class="card-title">How It Works</div>
-        <p>
-          <strong>determinoss</strong> generates cryptographic seeds from the physical chaos of a lava lamp —
+        <div class="card-title" data-en="How It Works" data-fr="Fonctionnement">How It Works</div>
+        <p data-en="<strong>Determinoss</strong> generates cryptographic seeds from the physical chaos of a lava lamp — inspired by <strong>Cloudflare's LavaRand</strong> system. A webcam films the lamp 24/7. Each frame is compared to the previous one: the pixel-by-pixel difference (delta) is hashed with <code>SHA-256</code>, producing a 256-bit seed that is unpredictable and physically grounded."
+           data-fr="<strong>Determinoss</strong> génère des graines cryptographiques à partir du chaos physique d'une lampe à lave — inspiré du système <strong>LavaRand de Cloudflare</strong>. Une webcam filme la lampe en continu. Chaque image est comparée à la précédente : la différence pixel par pixel (delta) est hachée avec <code>SHA-256</code>, produisant une graine de 256 bits imprévisible et ancrée dans le monde physique.">
+          <strong>Determinoss</strong> generates cryptographic seeds from the physical chaos of a lava lamp —
           inspired by <strong>Cloudflare's LavaRand</strong> system. A webcam films the lamp 24/7.
           Each frame is compared to the previous one: the pixel-by-pixel difference (delta) is hashed with
           <code>SHA-256</code>, producing a 256-bit seed that is unpredictable and physically grounded.
         </p>
-        <p>
+        <p data-en="Static frames (no movement) are discarded. Only genuine visual entropy makes it into the pool. The last <strong>100 seeds</strong> are kept in memory and served via REST API or real-time SSE stream."
+           data-fr="Les images statiques (sans mouvement) sont ignorées. Seule la véritable entropie visuelle entre dans le pool. Les <strong>100 dernières graines</strong> sont conservées en mémoire et exposées via API REST ou flux SSE en temps réel.">
           Static frames (no movement) are discarded. Only genuine visual entropy makes it into the pool.
           The last <strong>100 seeds</strong> are kept in memory and served via REST API or real-time SSE stream.
         </p>
-        <p>
+        <p data-en="Pass <code>?token=…</code> to <code>GET /seed</code> to also receive the current lava lamp frame as a base64-encoded JPEG (<code>frame_jpeg</code> field). Display it with <code>img.src = &quot;data:image/jpeg;base64,&quot; + frame_jpeg</code>. The token is the same as the live view password."
+           data-fr="Passez <code>?token=…</code> à <code>GET /seed</code> pour recevoir également l'image actuelle de la lampe en JPEG encodé base64 (champ <code>frame_jpeg</code>). Affichez-la avec <code>img.src = &quot;data:image/jpeg;base64,&quot; + frame_jpeg</code>. Le token est le même que le mot de passe de la vue en direct.">
           Pass <code>?token=…</code> to <code>GET /seed</code> to also receive the current lava lamp frame as a
           base64-encoded JPEG (<code>frame_jpeg</code> field). Display it with
           <code>img.src = "data:image/jpeg;base64," + frame_jpeg</code>.
@@ -525,19 +550,19 @@
         <div class="steps">
           <div class="step">
             <div class="step-num">STEP 01</div>
-            <p>Webcam captures the lava lamp at ~1 fps via <code>ffmpeg</code></p>
+            <p data-en="Webcam captures the lava lamp at ~1 fps via <code>ffmpeg</code>" data-fr="La webcam capture la lampe à lave à ~1 fps via <code>ffmpeg</code>">Webcam captures the lava lamp at ~1 fps via <code>ffmpeg</code></p>
           </div>
           <div class="step">
             <div class="step-num">STEP 02</div>
-            <p>Per-pixel delta between consecutive frames is computed</p>
+            <p data-en="Per-pixel delta between consecutive frames is computed" data-fr="Le delta pixel par pixel entre deux images consécutives est calculé">Per-pixel delta between consecutive frames is computed</p>
           </div>
           <div class="step">
             <div class="step-num">STEP 03</div>
-            <p><code>SHA-256(delta)</code> produces a 64-char hex seed</p>
+            <p data-en="<code>SHA-256(delta)</code> produces a 64-char hex seed" data-fr="<code>SHA-256(delta)</code> produit une graine hexadécimale de 64 caractères"><code>SHA-256(delta)</code> produces a 64-char hex seed</p>
           </div>
           <div class="step">
             <div class="step-num">STEP 04</div>
-            <p>Seed is pushed to the server and exposed via API</p>
+            <p data-en="Seed is pushed to the server and exposed via API" data-fr="La graine est envoyée au serveur et exposée via l'API">Seed is pushed to the server and exposed via API</p>
           </div>
         </div>
       </div>
@@ -676,6 +701,26 @@
     });
 
     document.addEventListener('fullscreenchange', updateFsIcon);
+
+    /* ── Language switch ── */
+    let currentLang = 'fr';
+
+    function applyLang(lang) {
+      document.querySelectorAll('[data-en]').forEach(el => {
+        el.innerHTML = el.dataset[lang];
+      });
+      document.querySelectorAll('[data-placeholder-en]').forEach(el => {
+        el.placeholder = lang === 'fr' ? el.dataset.placeholderFr : el.dataset.placeholderEn;
+      });
+      document.getElementById('lang-btn').textContent = lang === 'en' ? 'FR' : 'EN';
+    }
+
+    applyLang('fr');
+
+    document.getElementById('lang-btn').addEventListener('click', () => {
+      currentLang = currentLang === 'en' ? 'fr' : 'en';
+      applyLang(currentLang);
+    });
   </script>
 </body>
 </html>
