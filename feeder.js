@@ -21,7 +21,6 @@ const WEBCAM_DEVICE = (process.env.WEBCAM_DEVICE || '').trim().replace(/^"|"$/g,
 const WIDTH = 1920;
 const HEIGHT = 1080;
 const FPS = 1;
-const SEED_INTERVAL_MS = 2000; // send a seed at most every 2s regardless of FPS
 
 if (!WEBCAM_DEVICE) {
   console.error('[feeder] WEBCAM_DEVICE is not set.');
@@ -62,7 +61,6 @@ function connectWs() {
 // --- JPEG frame processing ---
 
 let prevPixels = null;
-let lastSeedAt = 0;
 
 function processJpegFrame(jpegBytes) {
   // Send frame for live view
@@ -100,10 +98,6 @@ function processJpegFrame(jpegBytes) {
     console.log('[feeder] static frame, skipping');
     return;
   }
-
-  const now = Date.now();
-  if (now - lastSeedAt < SEED_INTERVAL_MS) return;
-  lastSeedAt = now;
 
   const seed = createHash('sha256').update(delta).digest('hex');
   console.log(`[feeder] seed: ${seed.slice(0, 16)}… (delta sum=${sum})`);
