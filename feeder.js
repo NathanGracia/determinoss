@@ -18,8 +18,8 @@ import jpeg from 'jpeg-js';
 
 const WS_URL = process.env.WS_URL || 'ws://localhost:3000/ws';
 const WEBCAM_DEVICE = (process.env.WEBCAM_DEVICE || '').trim().replace(/^"|"$/g, '');
-const WIDTH = 320;
-const HEIGHT = 240;
+const WIDTH = 1280;
+const HEIGHT = 720;
 const FPS = 1; // 1 frame/s — fine for a lava lamp
 
 if (!WEBCAM_DEVICE) {
@@ -140,17 +140,16 @@ function parseFrames(chunk) {
 function buildFfmpegArgs() {
   const input =
     process.platform === 'win32'
-      ? ['-f', 'dshow', '-i', `video=${WEBCAM_DEVICE}`]
+      ? ['-f', 'dshow', '-video_size', `${WIDTH}x${HEIGHT}`, '-i', `video=${WEBCAM_DEVICE}`]
       : process.platform === 'darwin'
-      ? ['-f', 'avfoundation', '-i', WEBCAM_DEVICE]
-      : ['-f', 'v4l2', '-i', WEBCAM_DEVICE];
+      ? ['-f', 'avfoundation', '-video_size', `${WIDTH}x${HEIGHT}`, '-i', WEBCAM_DEVICE]
+      : ['-f', 'v4l2', '-video_size', `${WIDTH}x${HEIGHT}`, '-i', WEBCAM_DEVICE];
 
   return [
     ...input,
-    '-vf', `scale=${WIDTH}:${HEIGHT}`,
     '-r', String(FPS),
     '-f', 'mjpeg',
-    '-q:v', '5',
+    '-q:v', '2',
     'pipe:1',
   ];
 }
